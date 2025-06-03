@@ -1,9 +1,8 @@
+from tkinter import *
 import os
 import shutil
+import textwrap
 from myTerminal_installer import list_of_paths_path
-
-
-
 
 
 # todo
@@ -21,7 +20,7 @@ COLOR_BLACK = "\033[30m"
 COLOR_WHITE_STRONG = "\033[97m"
 COLOR_WHITE = "\033[37m"
 
-user_pref_input = COLOR_BLUE # default: BLUE
+user_pref_input = COLOR_BLUE  # default: BLUE
 
 
 RESET = "\033[0m"
@@ -33,16 +32,14 @@ except ModuleNotFoundError:
     print(f"{COLOR_GREEN}Installing Module TKINTER{RESET}")
     os.system("pip install tkinter")
 
-from tkinter import *
 
 installation_path = ""
+
 
 def rmdir_process():
     filename = command[6:]
     if len(filename) <= 0:
-        print(f"{COLOR_BLUE}Usage:{RESET} rmdir [DIRNAME]")
-        print()
-        print()
+        print(f"{COLOR_BLUE}Usage:{RESET} rmdir [DIRNAME]\n\n")
     try:
         if os.path.isdir(filename):
             os.rmdir(filename)
@@ -51,17 +48,15 @@ def rmdir_process():
                 pass
             else:
                 print(f"Please enter a {COLOR_RED}directory{RESET} path. Incase of files, use '{COLOR_GREEN}rm{RESET}'\n\n")
-                
-                
+
     except FileNotFoundError:
-        print(f"File {COLOR_RED}{filename}{RESET} doesn't exist. \n\n")
-        
-        
+        print(f"File {COLOR_RED}{filename}{RESET} doesn't exist.\n\n")
+
     except OSError:
         shutil.rmtree(filename)
-        print(f"Directory `{filename}` was successfully {COLOR_GREEN}removed{RESET}. \n\n")
-        print()
-        
+        print(f"Directory `{filename}` was successfully {COLOR_GREEN}removed{RESET}.\n\n")
+
+
 # extracting info
 try:
     with open(list_of_paths_path, "r+") as file:
@@ -70,122 +65,116 @@ try:
 except FileNotFoundError:
     print("please run `myTerminal_installer.py` before this file.")
 
+
 def clear():
+
     print("\033[H\033[J", end="")
+
 
 working_directory = ""
 os.system("cls")
 try:
-    
+
     print("Welcome to myTerminal.")
     print("Made by Eidnoxon, 2025-2025. Use the code for whatever you want lol just give credits. pls :,c")
     command = 0
-    os.chdir(installation_path+"\\home") # Default work-path
+    os.chdir(installation_path+"\\home")  # Default work-path
     while command != exit:
-        # # global user_pr
+        # global user_pref
         working_directory = os.getcwd()
-        command=input(f"MT {COLOR_BLUE}{BOLD}{working_directory}\n      ┕━━━━━━━━{RESET}{COLOR_RED}${RESET} ") # User input (looped)
+        # User input (looped)
+        command = input(
+            f"MT {COLOR_BLUE}{BOLD}{working_directory}\n      ┕━━━━━━━━{RESET}{COLOR_RED}${RESET} ")
         if command.lower() in ['cls', 'clear']:
             print("\033[H\033[J", end="")
-    
+
         elif command == "help":
-            print("Commands:")
-            print(f"{COLOR_GREEN}ls{RESET} - List everything in your current directory")
-            print(f"         ┕━━━━━ {COLOR_GREEN}ls{RESET} {COLOR_RED}-dir{RESET} {COLOR_BLUE}[DIRNAME]{RESET} - Lists everything in the given directory.")
-            print(f"{COLOR_GREEN}print-txt{RESET} {COLOR_BLUE}[TEXT]{RESET} - prints the text you put after the command.")
-            print(f"{COLOR_GREEN}clear{RESET}, {COLOR_GREEN}cls{RESET} - clears the terminal")
-            print(f"{COLOR_GREEN}exit{RESET} - terminate the program running process")
-            print(f"{COLOR_GREEN}touch{RESET} {COLOR_BLUE}[FILENAME]{RESET} - creates a file with the specified filename")
-            print(f"{COLOR_GREEN}cat{RESET} {COLOR_BLUE}[FILENAME]{RESET} - View file content. Won't work on directories.")
-            print(f"{COLOR_GREEN}more{RESET} {COLOR_BLUE}[FILENAME]{RESET} - Same as {COLOR_RED}cat{RESET} lolz :3")
-            print(f"{COLOR_GREEN}cd{RESET} {COLOR_BLUE}[PATH]{RESET} or {COLOR_BLUE}..{RESET} - changes directory to given path. `cd ..` will go back a directory.")
-            print(f"{COLOR_GREEN}rm{RESET} {COLOR_BLUE}[FILENAME]{RESET} - removes a file with the specified filename")
-            print(f"{COLOR_GREEN}rmdir{RESET} {COLOR_BLUE}[DIRNAME]{RESET} - removes a directory with the specified name")
-            print(f"{COLOR_GREEN}mkdir{RESET} {COLOR_BLUE}[DIRNAME]{RESET} - creates a directory with the specified name")
-            print(f"{COLOR_GREEN}about myTerminal{RESET} - Displays information about the terminal.")
-            print()
-            print()
-    
-        elif command == "ls": # LS COMMAND AND ITS ALGORITHM
+            print(textwrap.dedent(
+                f"""\
+                Commands:
+                {COLOR_GREEN}ls{RESET} - List everything in your current directory
+                \t┕━━━━━ {COLOR_GREEN}ls{RESET} {COLOR_RED}-dir{RESET} {COLOR_BLUE}[DIRNAME]{RESET} - Lists everything in the given directory.
+                {COLOR_GREEN}print-txt{RESET} {COLOR_BLUE}[TEXT]{RESET} - Prints the text you put after the command.
+                {COLOR_GREEN}clear{RESET}, {COLOR_GREEN}cls{RESET} - Clears the terminal
+                {COLOR_GREEN}exit{RESET} - Terminates the program
+                {COLOR_GREEN}touch{RESET} {COLOR_BLUE}[FILENAME]{RESET} - Creates a file with the specified filename
+                {COLOR_GREEN}cat{RESET} {COLOR_BLUE}[FILENAME]{RESET} - Views file content (won’t work on directories)
+                {COLOR_GREEN}more{RESET} {COLOR_BLUE}[FILENAME]{RESET} - Same as {COLOR_RED}cat{RESET} lolz :3
+                {COLOR_GREEN}cd{RESET} {COLOR_BLUE}[PATH]{RESET} or {COLOR_BLUE}..{RESET} - Changes directory to the given path (`cd ..` goes back)
+                {COLOR_GREEN}rm{RESET} {COLOR_BLUE}[FILENAME]{RESET} - Removes a file
+                {COLOR_GREEN}rmdir{RESET} {COLOR_BLUE}[DIRNAME]{RESET} - Removes a directory
+                {COLOR_GREEN}mkdir{RESET} {COLOR_BLUE}[DIRNAME]{RESET} - Creates a directory
+                {COLOR_GREEN}about myTerminal{RESET} - Displays information about the terminal.
+                \n\n
+            """))
+
+        elif command == "ls":  # LS COMMAND AND ITS ALGORITHM
             if len(os.listdir()) > 0:
                 print()
                 print(f"{COLOR_GREEN} The content of {working_directory}:{RESET}")
                 for i in os.listdir():
                     if os.path.isdir(i):
-                        print(f"[FOLDER] {i}")
+                        print(f"[FOLDER] {i}\n")
                     else:
-                        print(f"         {i}")
-n(os.listdir()) <= 0: # idk how it can be less than zero but just in case yk :3
- \             
-            print()
+                        print(f"\t{i}\n")
+
+# n(os.listdir()) <= 0: # idk how it can be less than zero but just in case yk :3
+#  \
 
         elif command.strip().startswith("print-txt"):
-            text_to_print = command[10: ]
+            text_to_print = command[10:]
             print(f"{text_to_print}\n\n")
-    
+
         elif command == 'pwd':
-            print(f"{working_directory} \n\n")
-            
+            print(f"{working_directory}\n\n")
+
         elif command == 'exit':
             quit()
 
         elif command.strip().startswith('touch'):
             filename = command[len('touch '):]
             if len(filename) <= 0:
-                print(f"{COLOR_BLUE}Usage:{RESET} touch [FILENAME]")
-                print()
+                print(f"{COLOR_BLUE}Usage:{RESET} touch [FILENAME]\n")
             else:
                 with open(filename, "a+") as file:
                     pass
-                print(f"File '{COLOR_GREEN}{filename}{RESET}' was created successfully.")
-                print()
+                print(f"File '{COLOR_GREEN}{filename}{RESET}' was created successfully.\n")
+
         elif command.strip().startswith('rm'):
             if command.strip().startswith('rmdir') == False:
                 filename = command[3:]
                 try:
                     if len(filename) <= 0:
-                        print(f"{COLOR_BLUE}Usage:{RESET} rm [FILENAME]")
-                        print()
+                        print(f"{COLOR_BLUE}Usage:{RESET} rm [FILENAME]\n")
                     else:
                         os.remove(filename)
-                        print(f"File '{COLOR_RED}{filename}{RESET}' was removed successfully.")
-                        print()
+                        print(f"File '{COLOR_RED}{filename}{RESET}' was removed successfully.\n")
                 except FileNotFoundError:
-                    print(f"'{filename}' {COLOR_RED}was not{RESET} found.")
-                    print()
+                    print(f"'{filename}' {COLOR_RED}was not{RESET} found.\n")
                 except IsADirectoryError:
                     os.rmdir(filename)
-                    print(f"Directory '{COLOR_RED}{filename}{RESET}' was removed successfully.")
-                    print()
+                    print(f"Directory '{COLOR_RED}{filename}{RESET}' was removed successfully.\n")
             elif command.strip().startswith("rmdir"):
                 rmdir_process()
+
         elif command.strip().startswith('more'):
             filename = command[5:]
             if len(filename) <= 0:
-                print(f"{COLOR_BLUE}Usage:{RESET} more [FILENAME]")
-                print()
+                print(f"{COLOR_BLUE}Usage:{RESET} more [FILENAME]\n")
             else:
                 try:
                     with open(filename, "r+") as f:
                         for i in f.readlines():
-                            print(i)
-                    print()
-                    print()
+                            print(f"{i}\n\n")
                 except IsADirectoryError:
-                    print(f'The command {COLOR_BLUE}"more"{RESET} cannot scan directories. Maybe try {COLOR_RED}ls -dir [DIRNAME]{RESET}.')
-                    print()
-                    print()
+                    print(f'The command {COLOR_BLUE}"more"{RESET} cannot scan directories. Maybe try {COLOR_RED}ls -dir [DIRNAME]{RESET}.\n\n')
                 except FileNotFoundError:
-                    print(f"'{filename}' {COLOR_RED}was not{RESET} found.")
-                    print()
-                    print()
-        
+                    print(f"'{filename}' {COLOR_RED}was not{RESET} found.\n\n")
 
         elif command.strip().startswith("cat"):
             filename = command[4:]
             if len(filename) <= 0:
-                print(f"{COLOR_BLUE}Usage:{RESET} cat [FILENAME]")
-                print()
+                print(f"{COLOR_BLUE}Usage:{RESET} cat [FILENAME]\n")
             else:
                 if os.path.isdir(filename) == False:
                     try:
@@ -193,35 +182,24 @@ n(os.listdir()) <= 0: # idk how it can be less than zero but just in case yk :3
                             for i in f.readlines():
                                 print(i)
                     except PermissionError:
-                        print(f"Access {COLOR_RED}Denied{RESET}.")
-                        print()
-                        print()
+                        print(f"Access {COLOR_RED}Denied{RESET}.\n\n")
                     except FileNotFoundError:
-                        print(f"File `{COLOR_GREEN}{filename}{RESET}` doesn't exist.")
-                        print()
-                        print()
+                        print(f"File `{COLOR_GREEN}{filename}{RESET}` doesn't exist.\n\n")
                 else:
-                    print(f'The command {COLOR_BLUE}"cat"{RESET} cannot scan directories. Maybe try {COLOR_RED}ls -dir [DIRNAME]{RESET}.')
-                    print()
-                    print()
+                    print(f'The command {COLOR_BLUE}"cat"{RESET} cannot scan directories. Maybe try {COLOR_RED}ls -dir [DIRNAME]{RESET}.\n\n')
 
         elif command.strip().startswith("mkdir"):
             dirname = command[6:]
             if len(dirname) <= 0:
-                print(f"{COLOR_BLUE}Usage:{RESET} mkdir [DIRNAME]")
-                print()
-                print()
+                print(f"{COLOR_BLUE}Usage:{RESET} mkdir [DIRNAME]\n\n")
             else:
                 os.makedirs(dirname, exist_ok=True)
-                print(f"Directory was made {COLOR_GREEN}successfully{RESET}.")
-                print()
-                print()
+                print(f"Directory was made {COLOR_GREEN}successfully{RESET}.\n\n")
 
         elif command.strip().startswith("ls -dir"):
             dirname = command[8:]
             if len(dirname) <= 0:
-                print(f"{COLOR_BLUE}Usage:{RESET} ls -dir [DIRNAME]")
-                print()
+                print(f"{COLOR_BLUE}Usage:{RESET} ls -dir [DIRNAME]\n")
             try:
                 if os.path.isdir(dirname):
                     original_dir = os.getcwd()
@@ -231,39 +209,29 @@ n(os.listdir()) <= 0: # idk how it can be less than zero but just in case yk :3
                         if os.path.isdir(i):
                             print(f"[FOLDER] {i}")
                         else:
-                            print(f"         {i}")
+                            print(f"\t{i}")
                     if len(os.listdir()) <= 0:
-                        print(f"there are no {COLOR_RED}Directories{RESET} or {COLOR_RED}Files{RESET} found in {COLOR_GREEN}{working_directory}{RESET}")
-                        print()
+                        print(f"there are no {COLOR_RED}Directories{RESET} or {COLOR_RED}Files{RESET} found in {COLOR_GREEN}{working_directory}{RESET}\n")
                     os.chdir(original_dir)
                 else:
-                    print(f"Please specify a {COLOR_RED}Directory{RESET} name.")
-                    print()
+                    print(f"Please specify a {COLOR_RED}Directory{RESET} name.\n")
             except FileNotFoundError:
-                print("Given directory doesn't exist.")
-                print()
-
+                print("Given directory doesn't exist.\n")
 
         elif command.strip().startswith("cd"):
             path = command[3:].strip()
 
             if path == "":
-                print(f"{COLOR_BLUE}Usage:{RESET} cd [PATH] or '..' to go back.")
-                print()
-                print()
+                print(f"{COLOR_BLUE}Usage:{RESET} cd [PATH] or '..' to go back.\n\n")
             else:
                 if path != "..":
-                    try:   
+                    try:
                         os.chdir(path)
                         print()
                     except FileNotFoundError:
-                        print(f"Path {COLOR_RED}{path}{RESET} doesn't exist.")
-                        print()
-                        print()
+                        print(f"Path {COLOR_RED}{path}{RESET} doesn't exist.\n\n")
                     except NotADirectoryError:
-                        print(f"Path {COLOR_RED}{path}{RESET} is not a directory.")
-                        print()
-                        print()
+                        print(f"Path {COLOR_RED}{path}{RESET} is not a directory.\n\n")
                     except OSError:
                         new_path = path.replace('"', "")
                         os.chdir(new_path)
@@ -272,22 +240,24 @@ n(os.listdir()) <= 0: # idk how it can be less than zero but just in case yk :3
                         os.chdir(path)
                         print()
                     except OSError:
-                        print("Can't go back any further.")
-                        print()
-                        print()
+                        print("Can't go back any further.\n\n")
+
         elif command.lower() == "about myterminal":
-            print(f"{COLOR_GREEN}myTerminal{RESET} was made by {COLOR_GREEN}Eidnoxon{RESET}, Otherwise known as {COLOR_BLUE}PCPPTech{RESET}.")
-            print(f"This project was created to {BOLD} enhance my programming skills and help others.{RESET}")
-            print(f"YES!! {COLOR_GREEN}You can use this code for your startup, or your projects!{RESET}")
-            print(f"Just please give credits ;P")
-            print(f"The code might be a 'little' bit messy, im the worst programmer tbh, but feel free to modify it to your liking!")
-            print(f"{COLOR_GREEN}Eidnoxon (PCPPTech) Out, bye :3{RESET}")
-            print(f"IF YOU TRY TO USE COMMANDS LIKE NVIM, PYTHON ETC. IT WILL SHOW A POWERSHELL ERROR {COLOR_RED}IF{RESET} IT WILL SHOW ANY")
-            print(f"The reason for that is simply: im stupid and I don't know how to implement nvim into my own terminal :3")
-            print(f"Any help is appreciated, I want to learn from my mistakes and become better day-by-day 🙏")
-            print(f"I {COLOR_RED}PROMISE, ON MY LIFE{RESET} that the rest of the commands are original, and not os.system(command) 🙏")
-            print(f"Check the {COLOR_GREEN}code{RESET} if you want to, modify it even, i dont really care :D")
-            print(f"You can find me on discord: {COLOR_RED}eidnoxon{RESET}. You are always welcome to friend me :D")
+            print(textwrap.dedent(
+                f"""\
+                {COLOR_GREEN}myTerminal{RESET} was made by {COLOR_GREEN}Eidnoxon{RESET}, otherwise known as {COLOR_BLUE}PCPPTech{RESET}.
+                This project was created to {BOLD}enhance my programming skills and help others.{RESET}
+                YES!! {COLOR_GREEN}You can use this code for your startup, or your projects!{RESET}
+                Just please give credits ;P
+                The code might be a *little* bit messy — I'm the worst programmer tbh, but feel free to modify it to your liking!
+                {COLOR_GREEN}Eidnoxon (PCPPTech) Out, bye :3{RESET}
+                IF YOU TRY TO USE COMMANDS LIKE NVIM, PYTHON ETC., IT WILL SHOW A POWERSHELL ERROR {COLOR_RED}IF{RESET} IT SHOWS ANYTHING AT ALL.
+                The reason for that is simply: I'm stupid and don't know how to implement nvim into my own terminal :3
+                Any help is appreciated — I want to learn from my mistakes and become better day-by-day 🙏
+                I {COLOR_RED}PROMISE, ON MY LIFE{RESET} that the rest of the commands are original, and not just os.system(command) 🙏
+                Check the {COLOR_GREEN}code{RESET} if you want to. Modify it even — I don’t really care :D
+                You can find me on Discord: {COLOR_RED}eidnoxon{RESET}. You’re always welcome to friend me :D
+            """))
 
         # customization part (user freewill)
         elif command.lower() == "setcolor":
@@ -296,26 +266,33 @@ n(os.listdir()) <= 0: # idk how it can be less than zero but just in case yk :3
                     return True
                 else:
                     return False
-    
 
-            while True: # nested while loops
+            while True:  # nested while loops
                 clear()
-                print("Welcome to the design settings!")
-                print("Tell me, which part of the terminal's color do you want to customize?")
-                print("1. Command Input")
-                print("2. Coming soon (maybe :3)")
+                print(textwrap.dedent(
+                    """\
+                    Welcome to the design settings!
+                    Tell me, which part of the terminal's color do you want to customize?
+                    1. Command Input
+                    2. Coming soon (maybe :3)
+                """))
                 ans = int(input("Answer: "))
                 if ans == 1:
-                    while colorCommand != "back": # if color command is equals to "back", break the loop
+                    while colorCommand != "back":  # if color command is equals to "back", break the loop
                         clear()
-                        print(f"MT {user_pref}{BOLD}{working_directory}\n      ┕━━━━━━━━{RESET}{COLOR_RED}${RESET} ")
-                        print("Options:")
-                        print("1. Green")
-                        print("2. Blue")
-                        print("3. Red")
-                        print("4. Magenta")
-                        print("5. Pink")
-                        colorCommand = int(input("Your preference (in nums): "))
+                        print(textwrap.dedent(
+                            f"""\
+                            MT {user_pref}{BOLD}{working_directory}
+                            \t┕━━━━━━━━{RESET}{COLOR_RED}${RESET}
+                            Options:
+                            1. Green
+                            2. Blue
+                            3. Red
+                            4. Magenta
+                            5. Pink
+                        """))
+                        colorCommand = int(
+                            input("Your preference (in nums): "))
                         if colorCommand == "1":
                             if check(user_pref, COLOR_GREEN):
                                 print("You already have that selected.")
@@ -346,10 +323,6 @@ n(os.listdir()) <= 0: # idk how it can be less than zero but just in case yk :3
                 user_pref = COLOR_MAGENTA
             def opt_pink():
                 user_pref = COLOR_PINK
-            
-
-
-
             
             window = Tk()
             # centrize window
@@ -392,8 +365,6 @@ n(os.listdir()) <= 0: # idk how it can be less than zero but just in case yk :3
                 os.system(command)
             else:
                 print(f'"{COLOR_RED}{command}{RESET}" is not a valid command. If you\'re stuck, please type in {COLOR_GREEN}"help"{RESET}\n\n')
-
-
 
 except FileNotFoundError:
     print(f"{COLOR_RED}Please run `python myTerminal_installer.py` or doubleclick the myTerminal_intaller.py file before continuing.{RESET}")
