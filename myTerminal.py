@@ -2,6 +2,7 @@ from tkinter import *
 import os
 import shutil
 import textwrap
+import time
 from myTerminal_installer import list_of_paths_path
 
 
@@ -290,83 +291,132 @@ try:
                     1. Command Input
                     2. Coming soon (maybe :3)
                 """))
-                ans = input("Answer (type 'exit' to exit): ")
+                ans = input("Enter a number, or type 'back' to cancel, 'exit' to quit: ")
                 if ans == '1':
-                    colorCommand = ""
+                    # Color dictionary, numbers are "keys" and the values are tuples with a string and color code
+                    color_options = { # rpd, you can use a dictionary
+                        "1": ("GREEN", COLOR_GREEN),
+                        "2": ("BLUE", COLOR_BLUE),
+                        "3": ("RED", COLOR_RED),
+                        "4": ("MAGENTA", COLOR_MAGENTA),
+                        "5": ("PINK", COLOR_PINK),
+                        "6": ("WHITE", COLOR_WHITE_STRONG),
+                        "7": ("BLACK", COLOR_BLACK)
+                    }
+                    colorCommand = "" # value is the key in the dictionary
+                    selected_color_name = "" # value from the color name portion of the dictionary
                     while colorCommand != "back":  # if color command is equals to "back", break the loop
                         clear()
-                        print(textwrap.dedent(
-                            f"""\
-                            MT {user_pref_input}{BOLD}{working_directory}
-                            \t┕━━━━━━━━{RESET}{COLOR_RED}${RESET}
-                            Options:
-                            1. Green
-                            2. Blue
-                            3. Red
-                            4. Magenta
-                            5. Pink
-                            6. White
-                            7. Black
-                        """))
+                        # # You could also just get this printed out from the dictionary instead of manually changing colors in 2 places
+                        # print(textwrap.dedent(
+                        #     f"""\
+                        #     MT {user_pref_input}{BOLD}{working_directory}
+                        #     \t┕━━━━━━━━{RESET}{COLOR_RED}${RESET}
+                        #     Options:
+                        #     1. Green
+                        #     2. Blue
+                        #     3. Red
+                        #     4. Magenta
+                        #     5. Pink
+                        #     6. White
+                        #     7. Black
+                        #     Type 'back' or 'done' to finish.
+                        # """))
+
+                        # Build the dynamic color menu from the dictionary
+                        menu = f"MT {user_pref_input}{BOLD}{working_directory}\n"
+                        menu += f"\t┕━━━━━━━━{RESET}{COLOR_RED}${RESET}\n" # the += concatinates the strings together, print() will render the longer string
+                        menu += "Options:\n"
+                        for key, (name, color) in color_options.items():
+                            menu += f"  {key}. {name.capitalize()}{RESET}\n" # .capitalize() just capitilizes the first char in the string, rest are lowercase
+                            # menu += f"  {key}. {color}{name.capitalize()}{RESET}\n" # if you want the text to be those colors too (magenta doesn't show for some reason)
+                        menu += "  Type 'back' or 'done' to finish.\n"
+                        print(menu)
+
                         colorCommand = input(
                             "Your preference (in nums): "
                         )
-                        if colorCommand == "1":
-                            if check(user_pref_input, COLOR_GREEN):
-                                print("You already have that selected.\n")
-                            else:
-                                user_pref_input = COLOR_GREEN
-                                print(f"{COLOR_GREEN}Color GREEN{RESET} is successfully set.")
-                        elif colorCommand == "2":
-                            if check(user_pref_input, COLOR_BLUE):
-                                print("You already have that selected.\n")
-                            else:
-                                user_pref_input = COLOR_BLUE
-                                print(f"{COLOR_BLUE}Color BLUE{RESET} is successfully set.")
-                        elif colorCommand == "3":
-                            if check(user_pref_input, COLOR_RED):
-                                print("You already have that selected.\n")
-                            else:
-                                user_pref_input = COLOR_RED
-                                print(f"{COLOR_RED}Color RED{RESET} is successfully set.")
-                        elif colorCommand == "4":
-                            if check(user_pref_input, COLOR_MAGENTA):
-                                print("You already have that selected.\n")
-                            else:
-                                user_pref_input = COLOR_MAGENTA
-                                print(f"{COLOR_MAGENTA}Color MAGENTA{RESET} is successfully set.")
-                        elif colorCommand == "5":
-                            if check(user_pref_input, COLOR_PINK):
-                                print("You already have that selected.\n")
-                            else:
-                                user_pref_input = COLOR_PINK
-                                print(f"{COLOR_PINK}Color PINK{RESET} is successfully set.")
-                        elif colorCommand == "6":
-                            if check(user_pref_input, COLOR_WHITE_STRONG):
-                                print("You already have that selected.\n")
-                            else:
-                                user_pref = COLOR_WHITE_STRONG
-                                print(f"{COLOR_WHITE_STRONG}Color WHITE{RESET} is successfully set.")
-                        elif colorCommand == "7":
-                            if check(user_pref_input, COLOR_BLACK):
-                                print("You already have that selected.\n")
-                            else:
-                                user_pref_input = COLOR_BLACK
-                                print(f"{COLOR_BLACK}Color BLACK{RESET} is successfully set.")
-                        
-                        elif colorCommand.lower() == "done": # TODO TODO TODO TODO ERROR HERE! ERROR HERE!
+                        if colorCommand.lower() == "done":
                             os.chdir(f"C:\\Users\\{os.getlogin()}")
                             with open("mt_data.txt", "a+") as file:
+                                file.seek(0)
                                 lines = file.readlines()
-                                if len(lines) >= 1:
+                                if lines:
                                     file.truncate(0)
-                                file.write(str(user_pref_input)) # Sadly, it writes the variable's VALUE and not the NAME :(
-                                # Can you fix it? Please? Thanks
-                                # - Eidnoxon
+                                file.write(selected_color_name)
                             break
 
-                        else:
+                        elif colorCommand in color_options:
+                            name, value = color_options[colorCommand]
+                            if check(user_pref_input, value):
+                                print("You already have that selected.\n")
+                                time.sleep(2)
+                            else:
+                                user_pref_input = value
+                                selected_color_name = name
+                                print(f"{value}Color {name}{RESET} is successfully set.")
+                                time.sleep(2)
+                        elif colorCommand.lower() == "back":
                             break
+                        else:
+                            print("Invalid option. Please choose a valid number or type 'back'.")
+                            time.sleep(2)
+                        # if colorCommand == "1":
+                        #     if check(user_pref_input, COLOR_GREEN):
+                        #         print("You already have that selected.\n")
+                        #     else:
+                        #         user_pref_input = COLOR_GREEN
+                        #         print(f"{COLOR_GREEN}Color GREEN{RESET} is successfully set.")
+                        # elif colorCommand == "2":
+                        #     if check(user_pref_input, COLOR_BLUE):
+                        #         print("You already have that selected.\n")
+                        #     else:
+                        #         user_pref_input = COLOR_BLUE
+                        #         print(f"{COLOR_BLUE}Color BLUE{RESET} is successfully set.")
+                        # elif colorCommand == "3":
+                        #     if check(user_pref_input, COLOR_RED):
+                        #         print("You already have that selected.\n")
+                        #     else:
+                        #         user_pref_input = COLOR_RED
+                        #         print(f"{COLOR_RED}Color RED{RESET} is successfully set.")
+                        # elif colorCommand == "4":
+                        #     if check(user_pref_input, COLOR_MAGENTA):
+                        #         print("You already have that selected.\n")
+                        #     else:
+                        #         user_pref_input = COLOR_MAGENTA
+                        #         print(f"{COLOR_MAGENTA}Color MAGENTA{RESET} is successfully set.")
+                        # elif colorCommand == "5":
+                        #     if check(user_pref_input, COLOR_PINK):
+                        #         print("You already have that selected.\n")
+                        #     else:
+                        #         user_pref_input = COLOR_PINK
+                        #         print(f"{COLOR_PINK}Color PINK{RESET} is successfully set.")
+                        # elif colorCommand == "6":
+                        #     if check(user_pref_input, COLOR_WHITE_STRONG):
+                        #         print("You already have that selected.\n")
+                        #     else:
+                        #         user_pref = COLOR_WHITE_STRONG
+                        #         print(f"{COLOR_WHITE_STRONG}Color WHITE{RESET} is successfully set.")
+                        # elif colorCommand == "7":
+                        #     if check(user_pref_input, COLOR_BLACK):
+                        #         print("You already have that selected.\n")
+                        #     else:
+                        #         user_pref_input = COLOR_BLACK
+                        #         print(f"{COLOR_BLACK}Color BLACK{RESET} is successfully set.")
+                        
+                        # elif colorCommand.lower() == "done": # TODO TODO TODO TODO ERROR HERE! ERROR HERE!
+                        #     os.chdir(f"C:\\Users\\{os.getlogin()}")
+                        #     with open("mt_data.txt", "a+") as file:
+                        #         lines = file.readlines()
+                        #         if len(lines) >= 1:
+                        #             file.truncate(0)
+                        #         file.write(str(user_pref_input)) # Sadly, it writes the variable's VALUE and not the NAME :(
+                        #         # Can you fix it? Please? Thanks
+                        #         # - Eidnoxon
+                        #     break
+
+                        # else:
+                        #     break
                 elif ans == '2':
                     print('bro just be patient\n')
                 elif ans == 'exit':
