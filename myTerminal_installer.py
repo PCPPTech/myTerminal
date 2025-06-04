@@ -86,3 +86,8 @@ if __name__ == "__main__":
             file.write(installation_path_final)
         else:
             file.write(installation_path_final + "\n")
+
+    os.chdir(f"C:\\Users\\{os.getlogin()}")
+    with open("mt_data.txt", "a+") as f:
+        lines = f.readlines()
+
