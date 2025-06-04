@@ -20,16 +20,26 @@ COLOR_BLACK = "\033[30m"
 COLOR_WHITE_STRONG = "\033[97m"
 COLOR_WHITE = "\033[37m"
 
-user_pref_input = COLOR_BLUE  # default: BLUE
+user_pref_input = 0
 
+os.chdir(f"C:\\Users\\{os.getlogin()}")
+with open("mt_data.txt", "a+") as file: # if it doesnt exist, make it
+    lines = file.readlines()
+    if len(lines) <= 0:
+        user_pref_input = COLOR_BLUE # default
+    else:
+        user_pref_input = lines[0] # i will always write it in the first line
+        # if it is modified, the code won't work. IF YOU CAN DO ANYTHING ABOUT, PLEASE DO
+        # - Eidnoxon
 
 RESET = "\033[0m"
 BOLD = "\033[1m"
 
+
 try:
     from tkinter import *
 except ModuleNotFoundError:
-    print(f"{COLOR_GREEN}Installing Module TKINTER{RESET}")
+    print(f"{COLOR_GREEN}Installing Module {BOLD}TKINTER{RESET}")
     os.system("pip install tkinter")
 
 
@@ -70,7 +80,6 @@ def clear():
 
     print("\033[H\033[J", end="")
 
-
 working_directory = ""
 os.system("cls")
 try:
@@ -80,11 +89,11 @@ try:
     command = 0
     os.chdir(installation_path+"\\home")  # Default work-path
     while command != exit:
-        # global user_pref
+        # global user_pref_input
         working_directory = os.getcwd()
         # User input (looped)
         command = input(
-            f"MT {COLOR_BLUE}{BOLD}{working_directory}\n      ┕━━━━━━━━{RESET}{COLOR_RED}${RESET} ")
+            f"MT {user_pref_input}{BOLD}{working_directory}\n      ┕━━━━━━━━{RESET}{COLOR_RED}${RESET} ")
         if command.lower() in ['cls', 'clear']:
             print("\033[H\033[J", end="")
 
@@ -114,12 +123,12 @@ try:
                 print(f"{COLOR_GREEN} The content of {working_directory}:{RESET}")
                 for i in os.listdir():
                     if os.path.isdir(i):
-                        print(f"[FOLDER] {i}\n")
+                        print(f"[FOLDER] {i}")
                     else:
-                        print(f"\t{i}\n")
-
-# n(os.listdir()) <= 0: # idk how it can be less than zero but just in case yk :3
-#  \
+                        print(f"         {i}")
+                print() # new line after LS command finished, so it wont look bad
+            else:
+                print(f"This directory is {COLOR_RED}empty{RESET}.\n\n")
 
         elif command.strip().startswith("print-txt"):
             text_to_print = command[10:]
@@ -149,11 +158,16 @@ try:
                     else:
                         os.remove(filename)
                         print(f"File '{COLOR_RED}{filename}{RESET}' was removed successfully.\n")
+
                 except FileNotFoundError:
                     print(f"'{filename}' {COLOR_RED}was not{RESET} found.\n")
                 except IsADirectoryError:
-                    os.rmdir(filename)
-                    print(f"Directory '{COLOR_RED}{filename}{RESET}' was removed successfully.\n")
+                    ans = input("The given filename is a directory. Do you wanna remove it?(y/n) ")
+                    if ans.lower() == 'y':
+                        os.rmdir(filename)
+                        print(f"Directory '{COLOR_RED}{filename}{RESET}' was removed successfully.\n")
+                    else:
+                        print()
             elif command.strip().startswith("rmdir"):
                 rmdir_process()
 
@@ -276,13 +290,14 @@ try:
                     1. Command Input
                     2. Coming soon (maybe :3)
                 """))
-                ans = int(input("Answer: "))
-                if ans == 1:
+                ans = input("Answer (type 'exit' to exit): ")
+                if ans == '1':
+                    colorCommand = ""
                     while colorCommand != "back":  # if color command is equals to "back", break the loop
                         clear()
                         print(textwrap.dedent(
                             f"""\
-                            MT {user_pref}{BOLD}{working_directory}
+                            MT {user_pref_input}{BOLD}{working_directory}
                             \t┕━━━━━━━━{RESET}{COLOR_RED}${RESET}
                             Options:
                             1. Green
@@ -290,23 +305,72 @@ try:
                             3. Red
                             4. Magenta
                             5. Pink
+                            6. White
+                            7. Black
                         """))
-                        colorCommand = int(
-                            input("Your preference (in nums): "))
+                        colorCommand = input(
+                            "Your preference (in nums): "
+                        )
                         if colorCommand == "1":
-                            if check(user_pref, COLOR_GREEN):
-                                print("You already have that selected.")
+                            if check(user_pref_input, COLOR_GREEN):
+                                print("You already have that selected.\n")
                             else:
-                                user_pref = COLOR_GREEN
+                                user_pref_input = COLOR_GREEN
                                 print(f"{COLOR_GREEN}Color GREEN{RESET} is successfully set.")
-                                break
                         elif colorCommand == "2":
-                            if check(user_pref, COLOR_BLUE):
-                                print("You already have that selected.")
+                            if check(user_pref_input, COLOR_BLUE):
+                                print("You already have that selected.\n")
                             else:
-                                user_pref = COLOR_BLUE
+                                user_pref_input = COLOR_BLUE
                                 print(f"{COLOR_BLUE}Color BLUE{RESET} is successfully set.")
-                                break
+                        elif colorCommand == "3":
+                            if check(user_pref_input, COLOR_RED):
+                                print("You already have that selected.\n")
+                            else:
+                                user_pref_input = COLOR_RED
+                                print(f"{COLOR_RED}Color RED{RESET} is successfully set.")
+                        elif colorCommand == "4":
+                            if check(user_pref_input, COLOR_MAGENTA):
+                                print("You already have that selected.\n")
+                            else:
+                                user_pref_input = COLOR_MAGENTA
+                                print(f"{COLOR_MAGENTA}Color MAGENTA{RESET} is successfully set.")
+                        elif colorCommand == "5":
+                            if check(user_pref_input, COLOR_PINK):
+                                print("You already have that selected.\n")
+                            else:
+                                user_pref_input = COLOR_PINK
+                                print(f"{COLOR_PINK}Color PINK{RESET} is successfully set.")
+                        elif colorCommand == "6":
+                            if check(user_pref_input, COLOR_WHITE_STRONG):
+                                print("You already have that selected.\n")
+                            else:
+                                user_pref = COLOR_WHITE_STRONG
+                                print(f"{COLOR_WHITE_STRONG}Color WHITE{RESET} is successfully set.")
+                        elif colorCommand == "7":
+                            if check(user_pref_input, COLOR_BLACK):
+                                print("You already have that selected.\n")
+                            else:
+                                user_pref_input = COLOR_BLACK
+                                print(f"{COLOR_BLACK}Color BLACK{RESET} is successfully set.")
+                        
+                        elif colorCommand.lower() == "done": # TODO TODO TODO TODO ERROR HERE! ERROR HERE!
+                            os.chdir(f"C:\\Users\\{os.getlogin()}")
+                            with open("mt_data.txt", "a+") as file:
+                                lines = file.readlines()
+                                if len(lines) >= 1:
+                                    file.truncate(0)
+                                file.write(str(user_pref_input)) # Sadly, it writes the variable's VALUE and not the NAME :(
+                                # Can you fix it? Please? Thanks
+                                # - Eidnoxon
+                            break
+
+                        else:
+                            break
+                elif ans == '2':
+                    print('bro just be patient\n')
+                elif ans == 'exit':
+                    break
 
                 else:
                     print("invalid option.")
