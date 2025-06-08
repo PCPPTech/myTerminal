@@ -14,6 +14,10 @@ installation_path_final = ""
 mthome_path = ""
 with open(f"C:\\Users\\{os.getlogin()}\\mtpaths.txt", "a+") as file:
     pass # Create the text file if it doesnt already exist
+# create a mtdata_dollarsign.txt file to store the color of the dollar sign
+with open(f"C:\\Users\\{os.getlogin()}\\mt_datadollarsign.txt", "a+") as file:
+    pass
+
 def main():
     global given_installation_path
     global installation_path_final
