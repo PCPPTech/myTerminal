@@ -75,7 +75,7 @@ You can customize terminal appearance (like input color) by using the `setcolor`
 | `pwd`              | Shows current directory                     |
 | `clear` / `cls`    | Clears the screen                           |
 | `about myTerminal` | Info about the project                      |
-
+| `setcolor`         | Displays a color customization menu         |
 ---
 
 ## Notes

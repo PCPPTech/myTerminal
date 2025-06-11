@@ -147,6 +147,7 @@ try:
                 {COLOR_GREEN}rmdir{RESET} {COLOR_BLUE}[DIRNAME]{RESET} - Removes a directory
                 {COLOR_GREEN}mkdir{RESET} {COLOR_BLUE}[DIRNAME]{RESET} - Creates a directory
                 {COLOR_GREEN}about myTerminal{RESET} - Displays information about the terminal.
+                {COLOR_GREEN}setcolor{RESET} - Displays a menu where you can customize the terminal's color.
                 \n\n
             """))
 
