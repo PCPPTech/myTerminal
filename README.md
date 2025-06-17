@@ -59,23 +59,25 @@ You can customize terminal appearance (like input color) by using the `setcolor`
 
 ## Supported Commands (from inside the terminal)
 
-| Command            | Description                                 |
-| ------------------ | ------------------------------------------- |
-| `help`             | Shows command list                          |
-| `ls`               | Lists files in current directory            |
-| `ls -dir [dir]`    | Lists contents of specified directory       |
-| `cd [path]`        | Changes directory                           |
-| `touch [name]`     | Creates a new file                          |
-| `mkdir [name]`     | Creates a new directory                     |
-| `rm [file]`        | Deletes a file                              |
-| `rmdir [dir]`      | Deletes a directory (recursively if needed) |
-| `cat [file]`       | Prints contents of a file                   |
-| `more [file]`      | Same as `cat` (for fun :3)                  |
-| `print-txt [txt]`  | Echoes the provided text                    |
-| `pwd`              | Shows current directory                     |
-| `clear` / `cls`    | Clears the screen                           |
-| `about myTerminal` | Info about the project                      |
-| `setcolor`         | Displays a color customization menu         |
+
+| Command            | Description                                                      |
+| ------------------ | -----------------------------------------------------------------|
+| `help`             | Shows command list                                               |
+| `ls`               | Lists files in current directory                                 |
+| `ls -dir [dir]`    | Lists contents of specified directory                            |
+| `cd [path]`        | Changes directory                                                |
+| `touch [name]`     | Creates a new file                                               |
+| `mkdir [name]`     | Creates a new directory                                          |
+| `rm [file]`        | Deletes a file                                                   |
+| `rmdir [dir]`      | Deletes a directory (recursively if needed)                      |
+| `cat [file]`       | Prints contents of a file                                        |
+| `more [file]`      | Same as `cat`                                                    |
+| `print-txt [txt]`  | Echoes the provided text                                         |
+| `pwd`              | Shows current directory                                          |
+| `clear` / `cls`    | Clears the screen                                                |
+| `about myTerminal` | Info about the project                                           |
+| `sif`              | Stands for `set input field`, allows input field customization.  |
+| `setcolor`         | Allows color customization in different parts of the input field.|
 ---
 
 ## Notes
@@ -90,9 +92,7 @@ You can customize terminal appearance (like input color) by using the `setcolor`
 
 - Code is written for fun and learning. Contributions or suggestions are welcome.
 - You can friend the creator on Discord: `eidnoxon`
-- When you use a command that is not in the `help` command or in the table above, `myTerminal.py` will try
-to run the command in powershell first, and if that doesn't work, it will display an error. Meaning the command
-`python`, `nvim` and `vim` is supported. However, if you find any issues, friend me on Discord and please report. Thanks :D - Eidnoxon (PCPPTech)
+
 ---
 
 ## License
