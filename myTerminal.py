@@ -15,6 +15,9 @@ COLOR_MAGENTA = "\033[35m"
 COLOR_BLACK = "\033[30m"
 COLOR_WHITE_STRONG = "\033[97m"
 COLOR_WHITE = "\033[37m"
+COLOR_YELLOW = "\033[33m"
+
+BACKGROUND_COLOR_GREEN = "\033[42m"
 
 
 RESET = "\033[0m"
@@ -36,10 +39,6 @@ else:
 
 user_pref_if = "" # `if` is short for `input field` in this case
 
-
-# TODO TODO TODO TODO
-# Clear up dictionary
-# make setcolor command work
 
 user_pref_input = 0
 user_pref_ds = 0
@@ -118,6 +117,23 @@ def rmdir_process():
     except OSError:
         shutil.rmtree(filename)
         print(f"Directory `{filename}` was successfully {COLOR_GREEN}removed{RESET}.\n\n")
+    except PermissionError:
+        print(f"Couldn't remove `{filename}`: Insufficient Permission.\n\n")
+def listdir_process():
+    try:
+        if len(os.listdir()) > 0:
+            print()
+            print(f"{COLOR_GREEN} The content of {working_directory}:{RESET}")
+            for i in os.listdir():
+                if os.path.isdir(i):
+                    print(f"{BACKGROUND_COLOR_GREEN}{COLOR_BLACK}[FOLDER]{RESET} {i}")
+                else:
+                    print(f"         {COLOR_BLUE}{i}{RESET}")
+            print() # new line after LS command finished, so it wont look bad
+        else:
+            print(f"\n\t\tThis directory is {COLOR_RED}empty{RESET}.\n\n")
+    except PermissionError:
+        print(f"Can't list the contents of {os.getcwd()}: Insufficient Permission.\n\n")
 
 # extracting info
 try:
@@ -129,12 +145,11 @@ except (FileNotFoundError, IndexError):
 
 
 def clear():
-
     print("\033[H\033[J", end="")
 
 
 
-os.system("cls")
+os.system("cls") # enables ansi color codes (CRUCIAL)
 try:
     print("Welcome to myTerminal.")
     print("Made by Eidnoxon, 2025-2025. Use the code for whatever you want lol just give credits. pls :,c")
@@ -143,11 +158,12 @@ try:
     os.chdir(installation_path+"\\home")  # Default work-path
     while command != exit:
         # User input (looped)
-        # command = input(f"MT {user_pref_input}{BOLD}{working_directory}\n      ┕━━━━━━━━{RESET}{user_pref_ds}${RESET} ")
         
         working_directory = os.getcwd()
 
         # user input field preference information extraction
+
+        # Dictionary
         userPrefDict = {
             1: f"MT {user_pref_input}{BOLD}zaworkdir\\n\\t\\t┕━━━━━━━━{RESET}{user_pref_ds}${RESET}",
             2: f"MT {user_pref_input}{BOLD}zaworkdir{RESET}{user_pref_ds}>{RESET}",
@@ -180,7 +196,7 @@ try:
                 f"""\
                 Commands:
                 {COLOR_GREEN}ls{RESET} - List everything in your current directory
-                \t┕━━━━━ {COLOR_GREEN}ls{RESET} {COLOR_RED}-dir{RESET} {COLOR_BLUE}[DIRNAME]{RESET} - Lists everything in the given directory.
+                {COLOR_RED}OPTIONAL{RESET} {COLOR_GREEN}ls{RESET} {COLOR_BLUE}[DIRNAME]{RESET} - List everything in the given directory.
                 {COLOR_GREEN}print-txt{RESET} {COLOR_BLUE}[TEXT]{RESET} - Prints the text you put after the command.
                 {COLOR_GREEN}clear{RESET}, {COLOR_GREEN}cls{RESET} - Clears the terminal
                 {COLOR_GREEN}exit{RESET} - Terminates the program
@@ -197,18 +213,20 @@ try:
                 \n\n
             """))
 
-        elif command.lower() == "ls":  # LS COMMAND AND ITS ALGORITHM
-            if len(os.listdir()) > 0:
-                print()
-                print(f"{COLOR_GREEN} The content of {working_directory}:{RESET}")
-                for i in os.listdir():
-                    if os.path.isdir(i):
-                        print(f"[FOLDER] {i}")
-                    else:
-                        print(f"         {i}")
-                print() # new line after LS command finished, so it wont look bad
+        elif command.lower().strip().startswith("ls"):  #! LS COMMAND AND ITS ALGORITHM
+            dirname = command[3:]
+            if len(dirname) > 0:
+                try:
+                    org_wd = os.getcwd()
+                    os.chdir(dirname)
+                    listdir_process()
+                    os.chdir(org_wd) # change back to the original directory once it is done
+                except PermissionError:
+                    print(f"Can't access `{dirname}`: Insufficient Permission.\n\n")
+                except FileNotFoundError:
+                    print(f"Directory `{COLOR_BLACK}{dirname}{RESET}` not found.\n\n")
             else:
-                print(f"\n\t\tThis directory is {COLOR_RED}empty{RESET}.\n\n")
+                listdir_process()
 
         elif command.lower().strip().startswith("print-txt"):
             text_to_print = command[10:]
@@ -290,27 +308,6 @@ try:
                 os.makedirs(dirname, exist_ok=True)
                 print(f"Directory was made {COLOR_GREEN}successfully{RESET}.\n\n")
 
-        elif command.lower().strip().startswith("ls -dir"):
-            dirname = command[8:]
-            if len(dirname) <= 0:
-                print(f"{COLOR_BLUE}Usage:{RESET} ls -dir [DIRNAME]\n")
-            try:
-                if os.path.isdir(dirname):
-                    original_dir = os.getcwd()
-                    os.chdir(dirname)
-                    print(f"Contents of {COLOR_GREEN}{os.getcwd()}{RESET}")
-                    for i in os.listdir():
-                        if os.path.isdir(i):
-                            print(f"[FOLDER] {i}")
-                        else:
-                            print(f"\t{i}")
-                    if len(os.listdir()) <= 0:
-                        print(f"there are no {COLOR_RED}Directories{RESET} or {COLOR_RED}Files{RESET} found in {COLOR_GREEN}{working_directory}{RESET}\n")
-                    os.chdir(original_dir)
-                else:
-                    print(f"Please specify a {COLOR_RED}Directory{RESET} name.\n")
-            except FileNotFoundError:
-                print("Given directory doesn't exist.\n")
 
         elif command.lower().strip().startswith("cd"):
             path = command[3:].strip()
@@ -329,6 +326,8 @@ try:
                     except OSError:
                         new_path = path.replace('"', "")
                         os.chdir(new_path)
+                    except PermissionError:
+                        print(f"Can't warp into {COLOR_RED}{path}{RESET}: Insufficient Permission.\n\n")
                 elif path == "..":
                     try:
                         os.chdir(path)
