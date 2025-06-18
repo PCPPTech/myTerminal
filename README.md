@@ -53,8 +53,8 @@ myTerminal/
 
 ## Customization
 
-You can customize terminal appearance (like input color) by using the `setcolor` command inside the terminal.
-
+- You can customize the colors by using the `setcolor` command inside the terminal.
+- You can also customize the input field by using the `sif` (`set input field`) command inside the terminal.
 ---
 
 ## Supported Commands (from inside the terminal)
@@ -99,10 +99,12 @@ You can customize terminal appearance (like input color) by using the `setcolor`
 
 Open-source, use it for whatever — just credit **Eidnoxon (PCPPTech)**
 
+---
+
 ## Errors and their reasons
-- `PermissionError`, or `Can't ...: Insufficient Permission`
-This error is pretty much explains itself: It means that it can't do a certain operation because of the lack of permission. It can often be caused by e.g. trying to remove a folder while the folder is under use by another app.
+- `PermissionError`, or `Can't ...: Insufficient Permission`.
+This error pretty much explains itself: It means that it can't do a certain operation because of the lack of permission. It can often be caused by e.g. trying to remove a folder while the folder is under use by another app.
 I integrated a lot of PermissionError handling lines, so it will most likely won't make you exit the CLI once you encounter that error.
-- `FileNotFoundError`
+- `FileNotFoundError`.
 You encounter this error when trying to remove a file or a directory that `doesn't exist`. If you encounter this error when you try to run `myTerminal.py` and you even ran `myTerminal_installer.py` beforehand, the issue might be
-that your home directory isn't `C:/Users/[username]`. `myTerminal` creates all the text files that are used to store the user's customization data in `C:/Users/[username`. Why? Because it is easily accessable.
+that your home directory isn't `C:/Users/[username]`. `myTerminal` creates all the text files that are used to store the user's customization data in `C:/Users/[username]`. Why? Because it is easily accessable.
