@@ -3,7 +3,6 @@ import os
 import shutil
 import textwrap
 import time
-from myTerminal_installer import list_of_paths_path
 import sys
 import socket
 
@@ -36,55 +35,56 @@ if len(sys.argv) > 1:
         print(f"{COLOR_GREEN}--about{RESET}: displays information about myTerminal.")
 else:
     pass
-
 user_pref_if = "" # `if` is short for `input field` in this case
-
-
-user_pref_input = 0
-user_pref_ds = 0
+user_pref_input = ""
+user_pref_ds = ""
+user_pref_if_template = 1
 color_dict = {
     "GREEN": COLOR_GREEN,
     "BLUE": COLOR_BLUE,
     "RED": COLOR_RED,
     "PINK": COLOR_PINK,
     "MAGENTA": COLOR_MAGENTA,
-    "BLACK": COLOR_BLACK,
+    "GRAY": COLOR_BLACK,
     "WHITE": COLOR_WHITE_STRONG
 }
 
 
+
+
 os.chdir(f"C:\\Users\\{os.getlogin()}")
+# input field (color)
 try:
-    with open("mt_data.txt", "r+") as file: # if it doesnt exist, make it
+    with open("mt_data.txt", "r+") as file:
         lines = file.readlines()
-        if len(lines) <= 0:
-            user_pref_input = COLOR_BLUE
-            file.write("BLUE")
-        else:
-            saved_color = lines[0].strip()
-            if saved_color in color_dict:
-                user_pref_input = color_dict[saved_color]
+        if lines:
+            if lines[0].strip() in color_dict:
+                user_pref_input = color_dict[lines[0].strip()]
             else:
-                user_pref_input = COLOR_BLUE # default
+                user_pref_input = COLOR_BLUE
+        else:
+            file.write("BLUE")
+            user_pref_input = COLOR_BLUE
 except FileNotFoundError:
     with open("mt_data.txt", "a+") as file:
         file.write("BLUE")
-
+        user_pref_input = COLOR_BLUE
+# dollar sign
 try:
     with open("mt_datadollarsign.txt", "r+") as file:
         lines = file.readlines()
-        if len(lines) <= 0:
-            user_pref_ds = COLOR_RED
-            file.write("RED")
-        else:
-            saved_color = lines[0].strip()
-            if saved_color in color_dict:
-                user_pref_ds = color_dict[saved_color]
+        if lines:
+            if lines[0].strip() in color_dict:
+                user_pref_ds = color_dict[lines[0].strip()]
             else:
                 user_pref_ds = COLOR_RED
+        else:
+            user_pref_ds = COLOR_RED
+            file.write("RED")
 except FileNotFoundError:
     with open("mt_datadollarsign.txt", "a+") as file:
         file.write("RED")
+    user_pref_ds = COLOR_RED
 
 
 
@@ -96,20 +96,29 @@ except ModuleNotFoundError:
 
 
 installation_path = ""
+def get_user_pref_if():
+    working_directory = os.getcwd()
+    userPrefDict = {
+        1: f"MT {user_pref_input}{BOLD}{working_directory}\\n\\t\\t┕━━━━━━━━{RESET}{user_pref_ds}${RESET}",
+        2: f"MT {user_pref_input}{BOLD}{working_directory}{RESET}{user_pref_ds}>{RESET}",
+        3: f"MT {user_pref_input}{BOLD}{working_directory}{RESET}{user_pref_ds}~${RESET}",
+        4: f"MT ╭─ {user_pref_input}{os.getlogin()}{RESET}@{COLOR_RED}{socket.gethostname()}{RESET}\\n   ╰─ {user_pref_ds}${RESET}",
+        5: f"MT ┌─[{user_pref_input}{BOLD}{working_directory}{RESET}]\\n   └─ {user_pref_ds}${RESET}",
+        6: f"MT [ {user_pref_input}{os.getlogin()}{RESET}@{COLOR_RED}{socket.gethostname()}{RESET} {user_pref_input}{BOLD}{working_directory}{RESET} ] {user_pref_ds}${RESET}",
+        7: f"MT < {user_pref_input}{os.getlogin()}{RESET}@{user_pref_input}{BOLD}{working_directory}{RESET} > {user_pref_ds}${RESET}"
+    }
+    return userPrefDict[user_pref_if_template]
 
 
 def rmdir_process():
-    filename = command[6:]
+    filename = command[6:].replace('"', "")
     if len(filename) <= 0:
         print(f"{COLOR_BLUE}Usage:{RESET} rmdir [DIRNAME]\n\n")
     try:
         if os.path.isdir(filename):
             os.rmdir(filename)
         else:
-            if len(filename) <= 0:
-                pass
-            else:
-                print(f"Please enter a {COLOR_RED}directory{RESET} path. Incase of files, use '{COLOR_GREEN}rm{RESET}'\n\n")
+            print(f"Please enter a {COLOR_RED}directory{RESET} path. Incase of files, use '{COLOR_GREEN}rm{RESET}'\n\n")
 
     except FileNotFoundError:
         print(f"File {COLOR_RED}{filename}{RESET} doesn't exist.\n\n")
@@ -123,7 +132,7 @@ def listdir_process():
     try:
         if len(os.listdir()) > 0:
             print()
-            print(f"{COLOR_GREEN} The content of {working_directory}:{RESET}")
+            print(f"Content of {os.getcwd()}:")
             for i in os.listdir():
                 if os.path.isdir(i):
                     print(f"{BACKGROUND_COLOR_GREEN}{COLOR_BLACK}[FOLDER]{RESET} {i}")
@@ -135,19 +144,26 @@ def listdir_process():
     except PermissionError:
         print(f"Can't list the contents of {os.getcwd()}: Insufficient Permission.\n\n")
 
-# extracting info
-try:
-    with open(list_of_paths_path, "r") as file:
-        lines = file.readlines()
-        installation_path = lines[0].strip()
-except (FileNotFoundError, IndexError):
-    print("please run `myTerminal_installer.py` before this file.")
-
-
 def clear():
     print("\033[H\033[J", end="")
 
 
+
+try:
+    with open("mt_userinputfield.txt", "r+") as file:
+        lines = file.readlines()
+        if lines:
+            user_pref_if_template = int(lines[0].strip())
+        else:
+            file.write("1")
+            user_pref_if_template = 1 # default fallback
+except FileNotFoundError:
+    with open("mt_userprefinput.txt", "a+") as file:
+        file.write("1")
+    user_pref_if_template = 1
+except ValueError:
+    print("Value error occured, setting user_pref_if_template to 1")
+    user_pref_if_template = 1
 
 os.system("cls") # enables ansi color codes (CRUCIAL)
 try:
@@ -155,41 +171,19 @@ try:
     print("Made by Eidnoxon, 2025-2025. Use the code for whatever you want lol just give credits. pls :,c")
     print("I am sorry if this app is full of bugs, i tried my best")
     command = 0
-    os.chdir(installation_path+"\\home")  # Default work-path
+    os.chdir(f"C:\\Users\\{os.getlogin()}") # I know it was already done, but just in case yk
     while command != exit:
         # User input (looped)
         
         working_directory = os.getcwd()
-
-        # user input field preference information extraction
-
-        # Dictionary
-        userPrefDict = {
-            1: f"MT {user_pref_input}{BOLD}zaworkdir\\n\\t\\t┕━━━━━━━━{RESET}{user_pref_ds}${RESET}",
-            2: f"MT {user_pref_input}{BOLD}zaworkdir{RESET}{user_pref_ds}>{RESET}",
-            3: f"MT {user_pref_input}{BOLD}zaworkdir{RESET}{user_pref_ds}~${RESET}",
-            4: f"MT ╭─ {user_pref_input}{os.getlogin()}{RESET}@{COLOR_RED}{socket.gethostname()}{RESET}\\n   ╰─ {user_pref_ds}${RESET}",
-            5: f"MT ┌─[{user_pref_input}{BOLD}zaworkdir{RESET}]\\n   └─ {user_pref_input}${RESET}",
-            6: f"MT [ {user_pref_input}{os.getlogin()}{RESET}@{COLOR_RED}{socket.gethostname()}{RESET} {user_pref_input}{BOLD}zaworkdir{RESET} ] {user_pref_ds}${RESET}",
-            7: f"MT < {user_pref_input}{os.getlogin()}{RESET}@{user_pref_input}{BOLD}zaworkdir{RESET} > {user_pref_ds}${RESET}"
-        }
-
-        try:
-            with open(f"C:\\Users\\{os.getlogin()}\\mt_userinputfield.txt", "r", encoding='utf-8') as file:
-                file.seek(0)
-                lines = file.readlines()
-                if lines:
-                    user_pref_if = lines[0]
-                else:
-                    user_pref_if = userPrefDict[1]
-        except FileNotFoundError:
-            user_pref_if = userPrefDict[1] # default value
-        
-        user_pref_if = user_pref_if.replace("\\n", "\n").replace("\\t", "\t").replace("zaworkdir", working_directory)
-
+        user_pref_if = get_user_pref_if().replace("\\n", "\n").replace("\\t", "\t").replace("zaworkdir", working_directory)
         command = input(f"{user_pref_if} ")
         if command.lower() in ['cls', 'clear']:
             print("\033[H\033[J", end="")
+
+        elif command.lower() == "seeColor":
+            print(f"{user_pref_input}user pref input {RESET}")
+            print(f"{user_pref_ds} user pref ds {RESET}\n\n")
 
         elif command.lower() == "help":
             print(textwrap.dedent(
@@ -225,6 +219,15 @@ try:
                     print(f"Can't access `{dirname}`: Insufficient Permission.\n\n")
                 except FileNotFoundError:
                     print(f"Directory `{COLOR_BLACK}{dirname}{RESET}` not found.\n\n")
+                except NotADirectoryError:
+                    print(f"{COLOR_RED}Error{RESET}: {COLOR_BLUE}ls{RESET} can't scan files, only folders.")
+                    print(f"{COLOR_GREEN}[NOTE]{RESET} For that purpose, use {COLOR_BLUE}`cat`{RESET} or {COLOR_BLUE}`more`{RESET}.\n\n")
+                except OSError:
+                    dirname = dirname.replace('"', "")
+                    temp_var = os.getcwd()
+                    os.chdir(dirname) # new dirname
+                    listdir_process()
+                    os.chdir(temp_var)
             else:
                 listdir_process()
 
@@ -243,13 +246,13 @@ try:
             if len(filename) <= 0:
                 print(f"{COLOR_BLUE}Usage:{RESET} touch [FILENAME]\n")
             else:
-                with open(filename, "a+") as file:
+                with open(filename.replace('"', ""), "a+") as file:
                     pass
                 print(f"File '{COLOR_GREEN}{filename}{RESET}' was created successfully.\n")
 
         elif command.lower().strip().startswith('rm'):
             if command.strip().startswith('rmdir') == False:
-                filename = command[3:]
+                filename = command[3:].replace('"', "")
                 try:
                     if len(filename) <= 0:
                         print(f"{COLOR_BLUE}Usage:{RESET} rm [FILENAME]\n")
@@ -270,21 +273,21 @@ try:
                 rmdir_process()
 
         elif command.lower().strip().startswith('more'):
-            filename = command[5:]
+            filename = command[5:].strip().replace('"', "")
             if len(filename) <= 0:
                 print(f"{COLOR_BLUE}Usage:{RESET} more [FILENAME]\n")
             else:
                 try:
                     with open(filename, "r+") as f:
                         for i in f.readlines():
-                            print(f"{i}\n\n")
+                            print(i, end='')
                 except IsADirectoryError:
                     print(f'The command {COLOR_BLUE}"more"{RESET} cannot scan directories. Maybe try {COLOR_RED}ls -dir [DIRNAME]{RESET}.\n\n')
                 except FileNotFoundError:
                     print(f"'{filename}' {COLOR_RED}was not{RESET} found.\n\n")
 
         elif command.lower().strip().startswith("cat"):
-            filename = command[4:]
+            filename = command[4:].strip().replace('"', "")
             if len(filename) <= 0:
                 print(f"{COLOR_BLUE}Usage:{RESET} cat [FILENAME]\n")
             else:
@@ -292,7 +295,7 @@ try:
                     try:
                         with open(filename, "r") as f:
                             for i in f.readlines():
-                                print(i)
+                                print(i, end='')
                     except PermissionError:
                         print(f"Access {COLOR_RED}Denied{RESET}.\n\n")
                     except FileNotFoundError:
@@ -301,7 +304,7 @@ try:
                     print(f'The command {COLOR_BLUE}"cat"{RESET} cannot scan directories. Maybe try {COLOR_RED}ls -dir [DIRNAME]{RESET}.\n\n')
 
         elif command.lower().strip().startswith("mkdir"):
-            dirname = command[6:]
+            dirname = command[6:].replace('"', "")
             if len(dirname) <= 0:
                 print(f"{COLOR_BLUE}Usage:{RESET} mkdir [DIRNAME]\n\n")
             else:
@@ -310,7 +313,7 @@ try:
 
 
         elif command.lower().strip().startswith("cd"):
-            path = command[3:].strip()
+            path = command[3:].strip().replace('"', "")
 
             if path == "":
                 print(f"{COLOR_BLUE}Usage:{RESET} cd [PATH] or '..' to go back.\n\n")
@@ -382,8 +385,8 @@ try:
 
 
                         # Build the dynamic color menu from the dictionary
-                        menu = f"MT {user_pref_input}{BOLD}{working_directory}\n"
-                        menu += f"\t┕━━━━━━━━{RESET}{user_pref_ds}${RESET}\n" # the += concatinates the strings together, print() will render the longer string
+                        current_if = get_user_pref_if().replace("\\n", "\n").replace("\\t", "\t")
+                        menu = f"{current_if}\n"
                         menu += "Options:\n"
                         for key, (name, color) in color_options.items():
                             menu += f"  {key}. {name.capitalize()}{RESET}\n" # .capitalize() just capitilizes the first char in the string, rest are lowercase
@@ -395,15 +398,18 @@ try:
                             "Your preference (in nums): "
                         )
                         if colorCommand.lower() == "done":
-                            temp_var = working_directory
-                            os.chdir(f"C:\\Users\\{os.getlogin()}")
-                            with open("mt_data.txt", "a+") as file:
-                                file.seek(0)
-                                lines = file.readlines()
-                                if lines:
-                                    file.truncate(0)
-                                file.write(selected_color_name)
-                            os.chdir(temp_var)
+                            if selected_color_name:
+                                temp_var = os.getcwd()
+                                os.chdir(f"C:\\Users\\{os.getlogin()}")
+                                try:
+                                    with open("mt_data.txt", "w") as file:
+                                        file.write(selected_color_name.strip())
+                                    print(f"Color {selected_color_name} saved successfully!")
+                                    time.sleep(1)
+                                except Exception as e:
+                                    print(f"Error saving color: {e}")
+                                    time.sleep(2)
+                                os.chdir(temp_var)
                             break
 
                         elif colorCommand in color_options:
@@ -438,8 +444,8 @@ try:
 
 
                         # Build the dynamic color menu from the dictionary
-                        menu = f"MT {user_pref_input}{BOLD}{working_directory}\n"
-                        menu += f"\t┕━━━━━━━━{RESET}{user_pref_ds}${RESET}\n" # the += concatinates the strings together, print() will render the longer string
+                        current_if = get_user_pref_if().replace("\\n", "\n").replace("\\t", "\t")
+                        menu = f"{current_if}\n"
                         menu += "Options:\n"
                         for key, (name, color) in color_options.items():
                             menu += f"  {key}. {name.capitalize()}{RESET}\n" # .capitalize() just capitilizes the first char in the string, rest are lowercase
@@ -447,20 +453,24 @@ try:
                         menu += "  Type 'back' or 'done' to finish.\n"
                         print(menu)
 
-                        colorCommand = input(
-                            "Your preference (in nums): "
-                        )
+                        colorCommand = input("Your preference (in nums): ")
+                        
+                        
                         if colorCommand.lower() == "done":
-                            temp_var = working_directory
-                            os.chdir(f"C:\\Users\\{os.getlogin()}")
-                            with open("mt_datadollarsign.txt", "a+") as file:
-                                file.seek(0)
-                                lines = file.readlines()
-                                if lines:
-                                    file.truncate(0)
-                                file.write(selected_color_name)
-                            os.chdir(temp_var)
+                            if selected_color_name:
+                                temp_var = os.getcwd()
+                                os.chdir(f"C:\\Users\\{os.getlogin()}")
+                                try:
+                                    with open("mt_datadollarsign.txt", "w") as file:
+                                        file.write(selected_color_name)
+                                    print(f"Dollar sign color {selected_color_name} saved successfully!")
+                                    time.sleep(1)
+                                except Exception as e:
+                                    print(f"Error saving color: {e}")
+                                    time.sleep(2)
+                                os.chdir(temp_var)
                             break
+
 
                         elif colorCommand in color_options:
                             name, value = color_options[colorCommand]
@@ -499,7 +509,7 @@ try:
                       ╰─ {user_pref_ds}${RESET}
                 
                 5. MT ┌─[{user_pref_input}{BOLD}{working_directory}{RESET}]
-                      └─ {user_pref_input}${RESET}
+                      └─ {user_pref_ds}${RESET}
 
                 6. MT [ {user_pref_input}{os.getlogin()}{RESET}@{COLOR_RED}{socket.gethostname()}{RESET} {user_pref_input}{BOLD}{working_directory}{RESET} ] {user_pref_ds}${RESET}
                 7. MT < {user_pref_input}{os.getlogin()}{RESET}@{user_pref_input}{BOLD}{working_directory}{RESET} > {user_pref_ds}${RESET}
@@ -512,9 +522,9 @@ try:
                         lines = file.readlines()
                         if lines:
                             file.truncate(0)
-                        thing_to_write = userPrefDict[userinp]
+                        thing_to_write = str(userinp)
                         file.write(thing_to_write)
-                    print(f"{userPrefDict[userinp].replace("\\n", "\n").replace("\\t", "\t")} successfully applied. Restart the terminal to see the effects.")
+                    print(f"Successfully applied number {COLOR_GREEN}{thing_to_write}{RESET}.\n\n")
                     break
                 elif userinp == 8:
                     clear()
@@ -522,6 +532,15 @@ try:
                 else:
                     print("Invalid Option, Try again.")
                     break
+        elif command.lower().strip().startswith("./"):
+            exec_name = command[2:]
+            if exec_name:
+                kewl = command.replace("/", "\\")
+                if shutil.which(kewl):
+                    os.system(kewl)
+                else:
+                    print(f"Executable `{COLOR_RED}{exec_name}{RESET}` was not found.\n\n")
+
         else:
             cmd = command.split()[0]
             if shutil.which(cmd):
