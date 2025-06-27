@@ -97,7 +97,7 @@ except ModuleNotFoundError:
 
 installation_path = ""
 def get_user_pref_if():
-    working_directory = os.getcwd()
+    working_directory = os.getcwd().replace("\\", "/")
     userPrefDict = {
         1: f"MT {user_pref_input}{BOLD}{working_directory}\\n\\t\\t┕━━━━━━━━{RESET}{user_pref_ds}${RESET}",
         2: f"MT {user_pref_input}{BOLD}{working_directory}{RESET}{user_pref_ds}>{RESET}",
@@ -124,8 +124,13 @@ def rmdir_process():
         print(f"File {COLOR_RED}{filename}{RESET} doesn't exist.\n\n")
 
     except OSError:
-        shutil.rmtree(filename)
-        print(f"Directory `{filename}` was successfully {COLOR_GREEN}removed{RESET}.\n\n")
+        try:
+            shutil.rmtree(filename)
+            print(f"Directory `{filename}` was successfully {COLOR_GREEN}removed{RESET}.\n\n")
+        except PermissionError:
+            print(f"Cannot remove given folder: Insufficient permission.\n\n")
+        except OSError as e:
+            print(f"Can't remove given folder: {e}")
     except PermissionError:
         print(f"Couldn't remove `{filename}`: Insufficient Permission.\n\n")
 def listdir_process():
@@ -278,13 +283,15 @@ try:
                 print(f"{COLOR_BLUE}Usage:{RESET} more [FILENAME]\n")
             else:
                 try:
-                    with open(filename, "r+") as f:
+                    with open(filename, "r+", encoding="utf-8") as f:
                         for i in f.readlines():
                             print(i, end='')
                 except IsADirectoryError:
                     print(f'The command {COLOR_BLUE}"more"{RESET} cannot scan directories. Maybe try {COLOR_RED}ls -dir [DIRNAME]{RESET}.\n\n')
                 except FileNotFoundError:
                     print(f"'{filename}' {COLOR_RED}was not{RESET} found.\n\n")
+                except (UnicodeEncodeError, UnicodeDecodeError):
+                    print(f"There was an issue trying to encode or decode the given file. This error can happen when you attempt to use this command on a .exe file, or other files like this. (encoding: utf-8)\n\n")
 
         elif command.lower().strip().startswith("cat"):
             filename = command[4:].strip().replace('"', "")
@@ -293,13 +300,17 @@ try:
             else:
                 if os.path.isdir(filename) == False:
                     try:
-                        with open(filename, "r") as f:
+                        with open(filename, "r", encoding="utf-8") as f:
                             for i in f.readlines():
                                 print(i, end='')
                     except PermissionError:
                         print(f"Access {COLOR_RED}Denied{RESET}.\n\n")
                     except FileNotFoundError:
                         print(f"File `{COLOR_GREEN}{filename}{RESET}` doesn't exist.\n\n")
+                    except (UnicodeEncodeError, UnicodeDecodeError):
+                        print(f"There was an issue trying to encode or decode the given file. This error can happen when you attempt to use this command on a .exe file, or other files like this. (encoding: utf-8)\n\n")
+
+
                 else:
                     print(f'The command {COLOR_BLUE}"cat"{RESET} cannot scan directories. Maybe try {COLOR_RED}ls -dir [DIRNAME]{RESET}.\n\n')
 
